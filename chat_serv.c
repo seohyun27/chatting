@@ -84,7 +84,7 @@ void * handle_clnt(void * arg) //쓰레드가 실행하는 함수
 	int str_len=0, i;
 	char msg[NAME_SIZE + BUF_SIZE];
 	int check; //1:1 메시지에서 전송 여부를 확인하기 위한 변수
-	char* error = "해당 대화명을 사용하는 클라이언트가 존재하지 않습니다.";
+	char* error = "해당 대화명을 사용하는 클라이언트가 존재하지 않습니다.\n";
 
 	while ((str_len = read(clnt_sock, msg, sizeof(msg))) != 0) { //blocking 함수. 클라이언트에게서 통신이 올 때까지 기다리기
 		if (msg[0] == '@') { //클라이언트에게서 받은 메시지가 1:1 메시지라면
@@ -149,7 +149,7 @@ int send_whisper_msg(char* msg, int len)   //현재 서버와 연결된 모든 클라이언트�
 
 	for (i = 0; i < clnt_cnt; i++) //clnt_names 전체를 돌며 리시버 찾기
 		if (strcmp(clnt_names[i], receiver) == 0) {
-			sprintf(whisper_msg, "%s %s", "(whisper)", text);
+			sprintf(whisper_msg, "%s %s\n", "(whisper)", text);
 			write(clnt_socks[i], whisper_msg, strlen(whisper_msg));
 			pthread_mutex_unlock(&mutx);
 			return 1;

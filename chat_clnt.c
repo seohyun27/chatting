@@ -84,8 +84,6 @@ void * send_msg(void * arg) //write 쓰레드가 실행하는 main 함수
 
 			sprintf(receiver_name, "%s %s", receiver, name); //리시버의 이름과 보내는 사람의 이름을 합친다
 			sprintf(name_msg, "%s %s", receiver_name, text); //위의 헤더를 text와 합쳐 name_msg에 저장
-
-			printf("%s\n", name_msg); //디버그용 코드
 		}
 		else //보내려는 메시지가 1:1이 아닐 경우
 			sprintf(name_msg,"%s %s", name, msg);
