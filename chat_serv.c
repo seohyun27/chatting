@@ -53,9 +53,9 @@ int main(int argc, char *argv[])
 	if(listen(serv_sock, 5)==-1) //큐 할당
 		error_handling("listen() error");
 	
-	printf("===================================\n");
+	printf("=====================================\n");
 	printf("	서버가 실행되었습니다.\n");
-	printf("===================================\n");
+	printf("=====================================\n");
 
 
 	while(1)
@@ -96,6 +96,8 @@ void * handle_clnt(void * arg) //쓰레드가 실행하는 함수
 		}
 		else //클라이언트에게서 받은 메시지가 전체 메시지라면
 			send_msg(msg, str_len);
+
+		memset(msg, 0, sizeof(msg)); //다음 통신을 위해 msg 배열을 0으로 초기화
 	}
 	
 	pthread_mutex_lock(&mutx); //임계 영역 시작
