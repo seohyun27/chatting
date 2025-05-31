@@ -21,11 +21,11 @@ void send_msg(char * msg, int len);
 void error_handling(char * msg);
 int send_whisper_msg(char* msg, int len);
 
-int clnt_cnt=0; //클라이언트 개수
-int clnt_socks[MAX_CLNT]; //지금까지 만들어진 클라이언트 저장
-char clnt_names[MAX_CLNT][NAME_SIZE]; //지금까지 만들어진 클라이언트의 이름을 저장
+int clnt_cnt=0;
+int clnt_socks[MAX_CLNT];
+char clnt_names[MAX_CLNT][NAME_SIZE]; //지금까지 만들어진 클라이언트의 이름을 저장하는 배열
 
-pthread_mutex_t mutx; //공유 데이터를 관리하기 위한 뮤텍스(일종의 key)
+pthread_mutex_t mutx; //공유 데이터를 관리하기 위한 뮤텍스
 
 int main(int argc, char *argv[])
 {
@@ -53,7 +53,10 @@ int main(int argc, char *argv[])
 	if(listen(serv_sock, 5)==-1) //큐 할당
 		error_handling("listen() error");
 	
-	printf("서버가 실행되었습니다.\n");
+	printf("===================================\n");
+	printf("	서버가 실행되었습니다.\n");
+	printf("===================================\n");
+
 
 	while(1)
 	{
@@ -94,11 +97,9 @@ void * handle_clnt(void * arg) //쓰레드가 실행하는 함수
 		else //클라이언트에게서 받은 메시지가 전체 메시지라면
 			send_msg(msg, str_len);
 	}
-	//통신 중인 클라이언트가 연결을 끊어서 read()가 0을 리턴 -> while문이 break
 	
 	pthread_mutex_lock(&mutx); //임계 영역 시작
-	//연결이 끊긴 클라이언트(본인) 지우기
-	for(i=0; i<clnt_cnt; i++) 
+	for(i=0; i<clnt_cnt; i++) //연결이 끊긴 클라이언트 삭제
 	{
 		if(clnt_sock==clnt_socks[i]) //clnt_socks 돌면서 본인 찾기
 		{
@@ -111,10 +112,10 @@ void * handle_clnt(void * arg) //쓰레드가 실행하는 함수
 			break;
 		}
 	}
-	clnt_cnt--; //클라이언트 개수 -1
+	clnt_cnt--; //클라이언트 개수 - 1
 	pthread_mutex_unlock(&mutx); //임계 영역 끝
 	close(clnt_sock);
-	return NULL; //main 함수의 main 쓰레드가 받게되는 리턴 값
+	return NULL;
 }
 
 void send_msg(char * msg, int len)   //현재 서버와 연결된 모든 클라이언트에게 전송받은 값을 전달
@@ -136,7 +137,7 @@ int send_whisper_msg(char* msg, int len)   //현재 서버와 연결된 모든 클라이언트�
 
 	receiver = strtok(msg, " "); //메시지를 받을 사람
 	receiver++; //receiver의 바로 앞 @ 삭제
-	text = strtok(NULL, " "); //메시지의 내용
+	text = strtok(NULL, ""); //메시지의 내용
 
 	pthread_mutex_lock(&mutx); //임계 영역 시작
 	if (strcmp(receiver, "all") == 0) { //모든 클라이언트에게 전송할 때
@@ -149,7 +150,7 @@ int send_whisper_msg(char* msg, int len)   //현재 서버와 연결된 모든 클라이언트�
 
 	for (i = 0; i < clnt_cnt; i++) //clnt_names 전체를 돌며 리시버 찾기
 		if (strcmp(clnt_names[i], receiver) == 0) {
-			sprintf(whisper_msg, "%s %s\n", "(whisper)", text);
+			sprintf(whisper_msg, "%s %s", "(whisper)", text);
 			write(clnt_socks[i], whisper_msg, strlen(whisper_msg));
 			pthread_mutex_unlock(&mutx);
 			return 1;
