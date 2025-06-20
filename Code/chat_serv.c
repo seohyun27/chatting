@@ -132,7 +132,7 @@ int send_whisper_msg(char* msg, int len) // 1:1 통신
 {
 	int i;
 	char* receiver, * text;
-	char whisper_msg[NAME_SIZE+BUF_SIZE];
+	char whisper_msg[NAME_SIZE+BUF_SIZE]; //수신자에게 전달된 최종 메시지를 담는 배열
 
 	receiver = strtok(msg, " "); //메시지를 받을 클라이언트, @가 삭제되지 않고 저장
 	receiver++; //receiver의 바로 앞 @ 삭제
@@ -156,7 +156,7 @@ int send_whisper_msg(char* msg, int len) // 1:1 통신
 		}
 	
 	pthread_mutex_unlock(&mutx); //임계 영역 끝
-	return -1; //해당 receiver가 존재하지 않음. 프로그램 비정상 종료
+	return -1; //해당 receiver가 존재하지 않음. 메소드 비정상 종료
 }
 
 
